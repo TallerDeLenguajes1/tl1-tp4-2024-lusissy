@@ -1,115 +1,119 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include<string.h>
+#define MAX 100
 
-#define MAX_DESC 100
+struct Tarea{
+    int TareaID;//Numérico autoincremental comenzando en 1000
+    char *Descripcion; //
+    int Duracion; // entre 10 – 100
+}typedef Tarea ;
 
-struct {
-    int TareaID;
-    char *Descripcion;
-    int Duracion;
-} typedef Tarea;
-
-struct Nodo {
+struct Nodo{
     Tarea T;
     struct Nodo *Siguiente;
-}typedef  Nodo;
+}typedef Nodo;
 
-Nodo* crearNodo(int id, const char *desc, int duracion) {
-    Nodo *nuevo = (Nodo*)malloc(sizeof(Nodo));
-    nuevo->T.TareaID = id;
-    nuevo->T.Descripcion = (char*)malloc(strlen(desc) + 1);
-    strcpy(nuevo->T.Descripcion, desc);
-    nuevo->T.Duracion = duracion;
-    nuevo->Siguiente = NULL;
+
+Nodo *crearNodo(char *desc, int duracion, int id){
+    Nodo * nuevo = (Nodo *) malloc (sizeof(Nodo));
+    nuevo->T.Descripcion=(char*)malloc(strlen(desc)+1);
+    strcpy(nuevo->T.Descripcion, desc );
+    nuevo->T.Duracion=duracion;
+    nuevo->T.TareaID=id;
+    nuevo->Siguiente=NULL;
+
     return nuevo;
 }
-
-void insertarTarea(Nodo **lista, Nodo *nueva) {
-    nueva->Siguiente = *lista;
-    *lista = nueva;
+void insertarNodo(Nodo **start, Nodo *Nodo){
+    Nodo->Siguiente= *start;
+    *start=Nodo;
 }
 
-void mostrarTareas(Nodo *lista, const char* titulo) {
-    printf("\n--- %s ---\n", titulo);
-    if (lista == NULL) {
-        printf("No hay tareas.\n");
+void mostrarTareas( Nodo *pendientes){
+   
+    while (pendientes!=NULL)
+    {
+        printf("\nID:%d  //  Descripcion:%s //Duracion:%d", pendientes->T.TareaID, pendientes->T.Descripcion, pendientes->T.Duracion);
+        pendientes=pendientes->Siguiente;
+
     }
-    while (lista != NULL) {
-        printf("ID: %d | Desc: %s | Duracion: %d mins\n",
-               lista->T.TareaID, lista->T.Descripcion, lista->T.Duracion);
-        lista = lista->Siguiente;
-    }
-}
-
-void moverTarea(Nodo **pendientes, Nodo **realizadas, int id) {
-    Nodo *actual = *pendientes;
-    Nodo *anterior = NULL;
-
-    while (actual != NULL && actual->T.TareaID != id) {
-        anterior = actual;
-        actual = actual->Siguiente;
-    }
-
-    if (actual == NULL) {
-        printf("Tarea con ID %d no encontrada.\n", id);
-        return;
-    }
-
-    if (anterior == NULL) {
-        *pendientes = actual->Siguiente;
-    } else {
-        anterior->Siguiente = actual->Siguiente;
-    }
-
-    insertarTarea(realizadas, actual);
-    printf("Tarea ID %d marcada como realizada.\n", id);
-}
-
-int main() {
-    Nodo *pendientes = NULL;
-    Nodo *realizadas = NULL;
-    int tareaID = 1000;
-    int continuar;
-    char desc[MAX_DESC];
-    int duracion;
-
-    // CARGA DE TAREAS
-    do {
-        printf("\nIngrese descripcion de la tarea: ");
-        getchar(); 
-        gets(desc);
-
-        printf("Ingrese duracion (10-100): ");
-        scanf("%d", &duracion);
-
-        Nodo *nueva = crearNodo(tareaID++, desc, duracion);
-        insertarTarea(&pendientes, nueva);
-
-        printf("¿Desea agregar otra tarea? (1: Si / 0: No): ");
-        scanf("%d", &continuar);
-
-    } while (continuar != 0);
-
     
-    do {
-        mostrarTareas(pendientes, "TAREAS PENDIENTES");
+}
 
-        printf("\n¿Desea marcar una tarea como realizada? (1: Si / 0: No): ");
-        scanf("%d", &continuar);
 
-        if (continuar) {
-            int id;
-            printf("Ingrese el ID de la tarea a marcar como realizada: ");
-            scanf("%d", &id);
-            moverTarea(&pendientes, &realizadas, id);
+Nodo *buscarNodo(Nodo *start, int idBuscado){
+    Nodo * Aux = start;
+    while(Aux && Aux->T.TareaID != idBuscado)  
+    {
+        Aux = Aux->Siguiente;
+    }
+    return Aux;
+}
+
+
+void QuitarNodo(Nodo **start, int id) {
+    Nodo *aux = *start;
+    Nodo *prev = NULL;
+    
+    // Buscamos el nodo a eliminar
+    while (aux != NULL && aux->T.TareaID != id) {
+        prev = aux;
+        aux = aux->Siguiente;
+    }
+
+    // Si encontramos el nodo
+    if (aux != NULL) {
+        if (prev == NULL) { 
+            *start = aux->Siguiente;  
+        } else {
+            prev->Siguiente = aux->Siguiente;  
         }
 
-    } while (continuar != 0);
+        
+    }
+}
+
+int main (){
+    Nodo *pendientes=NULL;
+    int id=1000;
+    int aux, cont=0;
+    char desc[MAX];
+    int duracion;
+
+    do
+    {
+        printf("Ingrese la descripcion de la tarea a realizar:");
+        getchar();
+        gets(desc);
+
+        printf("Ingrese la duracion de la tarea realizada:");
+        scanf("%d", &duracion);
+
+        Nodo *new=crearNodo(desc, duracion, id++);
+        insertarNodo(&pendientes, new);
+
+        printf("¿Quiere otra tarea pediente?(1-SI  0-NO)");
+        scanf("%d", &aux);
+        
+
+    } while (aux!=0);
+    printf("------TAREAS PENDIENTES------");
+    mostrarTareas( pendientes);
+    Nodo *realizadas=NULL;
+    int busqueda;
+    
+    printf("Ingrese el ID de la tarea que ya fue realizada: ");
+    scanf("%d", &busqueda);
+    Nodo *encontrado = buscarNodo(pendientes, busqueda);
+        
+    insertarNodo(&realizadas, encontrado);
+    QuitarNodo(&pendientes, busqueda);  
+      
+    printf("------TAREAS REALIZADAS------");
+    mostrarTareas(realizadas);
 
     
-    mostrarTareas(pendientes, "TAREAS PENDIENTES RESTANTES");
-    mostrarTareas(realizadas, "TAREAS REALIZADAS");
 
     return 0;
 }
