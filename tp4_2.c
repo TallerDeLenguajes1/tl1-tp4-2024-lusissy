@@ -20,19 +20,19 @@ struct Nodo{
 Nodo * crearTarea(int i);
 void cargarTareasPendientes(Nodo **tareasP);
 void cargarTareasRealizadas(Nodo **pendientes, Nodo**realizadas);
-void mostrarTareas(Nodo *tareas, char *titulo);
+void mostrarTareas(Nodo *tareasP,  Nodo *tareasR);
 void liberarLista(Nodo *lista);
 int main (){
 
     Nodo *pendientes=NULL;
     Nodo *realizadas=NULL;
     cargarTareasPendientes(&pendientes);
-    mostrarTareas(pendientes, "Pendientes");
+    
     cargarTareasRealizadas(&pendientes, &realizadas);
     mostrarTareas(realizadas, "Realizadas");
     liberarLista(pendientes);
     liberarLista(realizadas);
-    
+
     return 0;
 }
 Nodo *crearNodoTarea(int i ){
@@ -104,15 +104,29 @@ void cargarTareasRealizadas(Nodo **pendientes, Nodo**realizadas){
        
 }
 
-void mostrarTareas(Nodo *tareas, char *titulo){
+void mostrarTareas(Nodo *tareasP, Nodo *tareasR){
     Nodo *aux;
-    printf("\n\nTareas %s", titulo);
-    if (tareas!=NULL){
-        aux=tareas;
+    printf("\n\nTareas pendientes");
+    if (tareasP!=NULL){
+        aux=tareasP;
         while (aux!=NULL)
         {
-            printf("\nTarea %d: %s\n", aux->T.TareaID, aux->T.Descripcion);
+            printf("\ntarea %d: %s\n", aux->T.TareaID, aux->T.Descripcion);
             printf("Duracion: %d", aux->T.Duracion);
+            aux=aux->Siguiente;
+        }
+    }
+    else{
+        printf("\nVacia");
+    }
+    printf("\n\nTareas completadas");
+    if (tareasR!=NULL)
+    {
+        aux=tareasR;
+        while(aux!=NULL)
+        {
+            printf("\ntarea %d: %s\n",aux->T.TareaID, aux->T.Descripcion);
+            printf("Duracion: %d",aux->T.Duracion);
             aux=aux->Siguiente;
         }
     }
