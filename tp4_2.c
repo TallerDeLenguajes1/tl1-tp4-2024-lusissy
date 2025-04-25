@@ -21,6 +21,7 @@ Nodo * crearTarea(int i);
 void cargarTareasPendientes(Nodo **tareasP);
 void cargarTareasRealizadas(Nodo **pendientes, Nodo**realizadas);
 void mostrarTareas(Nodo *tareas, char *titulo);
+void liberarLista(Nodo *lista);
 int main (){
 
     Nodo *pendientes=NULL;
@@ -29,7 +30,9 @@ int main (){
     mostrarTareas(pendientes, "Pendientes");
     cargarTareasRealizadas(&pendientes, &realizadas);
     mostrarTareas(realizadas, "Realizadas");
-
+    liberarLista(pendientes);
+    liberarLista(realizadas);
+    
     return 0;
 }
 Nodo *crearNodoTarea(int i ){
@@ -115,5 +118,13 @@ void mostrarTareas(Nodo *tareas, char *titulo){
     }
     else{
         printf("\nVacia");
+    }
+}
+void liberarLista(Nodo *lista) {
+    while (lista) {
+        Nodo *temp = lista;
+        lista = lista->Siguiente;
+        free(temp->T.Descripcion); 
+        free(temp); 
     }
 }
