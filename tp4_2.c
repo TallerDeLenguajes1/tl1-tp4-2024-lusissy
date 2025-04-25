@@ -19,6 +19,7 @@ struct Nodo{
 
 Nodo * crearTarea(int i);
 void cargarTareasPendientes(Nodo **tareasP);
+void cargarTareasRealizadas(Nodo **pendientes, Nodo**realizadas);
 void mostrarTareas(Nodo *tareas, char *titulo);
 int main (){
 
@@ -26,8 +27,8 @@ int main (){
     Nodo *realizadas=NULL;
     cargarTareasPendientes(&pendientes);
     mostrarTareas(pendientes, "Pendientes");
-
-    
+    cargarTareasRealizadas(&pendientes, &realizadas);
+    mostrarTareas(realizadas, "Realizadas");
 
     return 0;
 }
@@ -68,6 +69,38 @@ void cargarTareasPendientes(Nodo **tareasP){
     }
     
 }
+void cargarTareasRealizadas(Nodo **pendientes, Nodo**realizadas){
+    int opcion=1;
+    int idIngresado;
+    Nodo **aux=pendientes;
+
+    while (opcion==1)
+    {
+        printf("\nIngrese el id de la tarea realizada:");
+        scanf("%d",&idIngresado);
+        aux = pendientes;
+        while (*aux!=NULL && (*aux)->T.TareaID!=idIngresado)
+        {
+            aux=&(*aux)->Siguiente;
+        }
+        if (*aux!=NULL)
+        {
+            Nodo *realizada=*aux;
+            *aux=(*aux)->Siguiente;
+
+            realizada->Siguiente=  *realizadas;
+            *realizadas = realizada;
+            
+            printf("Tarea completada registrada.\n");
+        }else {
+            printf("ID invalido. Operacion cancelada.\n");
+        }
+    printf("\nDesea registrar otra tarea realizada? si(escribir 1)/no(escribir 0):");
+    scanf("%d",&opcion);
+    }
+       
+}
+
 void mostrarTareas(Nodo *tareas, char *titulo){
     Nodo *aux;
     printf("\n\nTareas %s", titulo);
