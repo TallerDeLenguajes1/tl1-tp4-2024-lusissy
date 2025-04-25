@@ -18,12 +18,14 @@ struct Nodo{
 /*FUNCIONES*/
 
 Nodo * crearTarea(int i);
-
+void cargarTareasPendientes(Nodo **tareasP);
+void mostrarTareas(Nodo *tareas, char *titulo);
 int main (){
 
     Nodo *pendientes=NULL;
     Nodo *realizadas=NULL;
-    
+    cargarTareasPendientes(&pendientes);
+    mostrarTareas(pendientes, "Pendientes");
 
     
 
@@ -65,4 +67,20 @@ void cargarTareasPendientes(Nodo **tareasP){
         contador++;
     }
     
+}
+void mostrarTareas(Nodo *tareas, char *titulo){
+    Nodo *aux;
+    printf("\n\nTareas %s", titulo);
+    if (tareas!=NULL){
+        aux=tareas;
+        while (aux!=NULL)
+        {
+            printf("\nTarea %d: %s\n", aux->T.TareaID, aux->T.Descripcion);
+            printf("Duracion: %d", aux->T.Duracion);
+            aux=aux->Siguiente;
+        }
+    }
+    else{
+        printf("\nVacia");
+    }
 }
