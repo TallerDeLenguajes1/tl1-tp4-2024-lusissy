@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include<string.h>
+#include <ctype.h>
 #define MAX 100
 #define inicialID 1000
 struct Tarea{
@@ -21,15 +22,17 @@ Nodo * crearTarea(int i);
 void cargarTareasPendientes(Nodo **tareasP);
 void cargarTareasRealizadas(Nodo **pendientes, Nodo**realizadas);
 void mostrarTareas(Nodo *tareasP,  Nodo *tareasR);
+void consultarIdPalabra(Nodo *tareasR, Nodo *tareasP);
 void liberarLista(Nodo *lista);
 int main (){
 
     Nodo *pendientes=NULL;
     Nodo *realizadas=NULL;
     cargarTareasPendientes(&pendientes);
-    
     cargarTareasRealizadas(&pendientes, &realizadas);
-    mostrarTareas(realizadas, "Realizadas");
+    mostrarTareas(pendientes, realizadas);
+
+    consultarIdPalabra(pendientes, realizadas);
     liberarLista(pendientes);
     liberarLista(realizadas);
 
@@ -134,6 +137,59 @@ void mostrarTareas(Nodo *tareasP, Nodo *tareasR){
         printf("\nVacia");
     }
 }
+void consultarIdPalabra(Nodo* tareasR, Nodo* tareasP) {
+    char busqueda[100];
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+    /*getchar() lee un carácter del teclado. Asigna ese carácter a c.El ciclo sigue mientras el carácter no 
+    sea un salto de línea ni el fin de archivo (EOF).*/
+    printf("\nIngrese el ID (número) o palabra clave de la tarea:\n> ");
+    gets(busqueda);    
+
+    int esNumero = 1;
+    for (int i = 0; busqueda[i] != '\0'; i++) {
+        if (!isdigit(busqueda[i])) {
+            esNumero = 0;
+            break;
+        }
+    }
+
+    int idBuscado = -1;
+    if (esNumero) {
+        idBuscado = atoi(busqueda); //convierte "123" en 123 
+    }
+
+    Nodo* actual;
+
+    // Buscar en tareas pendientes
+    actual = tareasP;
+    while (actual != NULL) {
+        if ((esNumero && actual->T.TareaID == idBuscado) ||
+            (!esNumero && strstr(actual->T.Descripcion, busqueda))) {
+            printf("\nTarea encontrada en PENDIENTES:\n");
+            printf("ID: %d\nDescripcion: %s\nDuracion: %d\n",
+                   actual->T.TareaID, actual->T.Descripcion, actual->T.Duracion);
+            return;
+        }
+        actual = actual->Siguiente;
+    }
+
+    // Buscar en tareas realizadas
+    actual = tareasR;
+    while (actual != NULL) {
+        if ((esNumero && actual->T.TareaID == idBuscado) ||
+            (!esNumero && strstr(actual->T.Descripcion, busqueda))) {
+            printf("\nTarea encontrada en REALIZADAS:\n");
+            printf("ID: %d\nDescripcion: %s\nDuracion: %d\n",
+                   actual->T.TareaID, actual->T.Descripcion, actual->T.Duracion);
+            return;
+        }
+        actual = actual->Siguiente;
+    }
+
+    printf("No se encontró ninguna tarea con ese ID o palabra clave.\n");
+}
+
 void liberarLista(Nodo *lista) {
     while (lista) {
         Nodo *temp = lista;
